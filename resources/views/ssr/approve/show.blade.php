@@ -180,6 +180,7 @@
                             </div>
 
 
+
                             {{-- Attachment --}}
                             <div class="mb-4 p-4 border rounded bg-light">
                                 <h6 class="mb-3 text-uppercase fw-bold text-primary">Attachment</h6>
@@ -193,31 +194,31 @@
                             {{-- SSR Items --}}
                             <div class="mb-4 p-4 border rounded bg-light">
                                 <h6 class="mb-3 text-uppercase fw-bold text-primary">SSR Items</h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered align-middle datatable">
-                                            <thead class="table-light">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered align-middle datatable">
+                                        <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th>Description</th>
+                                            <th>Unit</th>
+                                            <th>Quantity Required</th>
+                                            <th>Balance</th>
+                                            <th>Quantity Approved</th>
+                                            <th>IMPA</th>
+                                            <th>Remarks</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($ssr_items as $item)
                                             <tr class="text-center">
-                                                <th>Description</th>
-                                                <th>Unit</th>
-                                                <th>Quantity Required</th>
-                                                <th>Balance</th>
-                                                <th>Quantity Approved</th>
-                                                <th>IMPA</th>
-                                                <th>Remarks</th>
-                                                <th>Status</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @foreach($ssr_items as $item)
-                                                <tr class="text-center">
-                                                    <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->unit ?? '-' }}</td>
-                                                    <td>{{ $item->quantity_req ?? '-' }}</td>
-                                                    <td>{{ $item->balance ?? '-' }}</td>
-                                                    <td>{{ $item->quantity_app ?? '-' }}</td>
-                                                    <td>{{ $item->impa_code ?? '-' }}</td>
-                                                    <td>{{ $item->remark ?? '-' }}</td>
-                                                    <td>
+                                                <td>{{ $item->description }}</td>
+                                                <td>{{ $item->unit ?? '-' }}</td>
+                                                <td>{{ $item->quantity_req ?? '-' }}</td>
+                                                <td>{{ $item->balance ?? '-' }}</td>
+                                                <td>{{ $item->quantity_app ?? '-' }}</td>
+                                                <td>{{ $item->impa_code ?? '-' }}</td>
+                                                <td>{{ $item->remark ?? '-' }}</td>
+                                                <td>
                                                         <span class="badge
                                                             {{ match($item->status ?? 'OPEN') {
                                                                 'OPEN' => 'bg-success text-white',
@@ -227,18 +228,18 @@
                                                             } }}">
                                                             {{ $item->status ?? 'OPEN' }}
                                                         </span>
-                                                        {{-- Settle DO then comeback here --}}
-                                                        @if(!empty($ssr->approved_remark))
-                                                            <div class="text-muted small mt-1">
-                                                                DO Number: {{ $item->do_no }}
-                                                            </div>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                    {{-- Settle DO then comeback here --}}
+                                                    @if(!empty($ssr->approved_remark))
+                                                        <div class="text-muted small mt-1">
+                                                            DO Number: {{ $item->do_no }}
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                         </div>

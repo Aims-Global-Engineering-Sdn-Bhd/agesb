@@ -1,6 +1,6 @@
 @extends('layouts.user_type.auth')
 
-@section('title', 'SSR Verification')
+@section('title', 'SSR Approve')
 
 @section('content')
 
@@ -11,9 +11,6 @@
                     <div class="card">
                         <div class="card-header mb-4 pb-0 d-flex justify-content-between align-items-center">
                             <h6>Ship Store Requisition</h6>
-                            <a href="{{ route('ssr.request.create', ['vessel'=> request('vessel')]) }}" class="btn btn-sm btn-primary">
-                                <i class="fa-solid fa-plus"></i> Add New
-                            </a>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2">
                             @if (session('success'))
@@ -29,7 +26,7 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link {{ empty($selectedVessel) ? 'active' : '' }}"
-                                       href="{{ route('ssr.verify.index') }}">
+                                       href="{{ route('ssr.approve.index') }}">
                                         All
                                     </a>
                                 </li>
@@ -37,46 +34,46 @@
                                 @foreach($vessels as $code => $name)
                                     <li class="nav-item">
                                         <a class="nav-link {{ $selectedVessel == $code ? 'active' : '' }}"
-                                           href="{{ route('ssr.verify.index',['vessel'=>$code]) }}">
+                                           href="{{ route('ssr.approve.index',['vessel'=>$code]) }}">
                                             {{ $name }}
                                         </a>
                                     </li>
                                 @endforeach
 
                             </ul>
-                                {{-- Status Filter --}}
-                                <div class="d-flex align-items-center px-3 mb-3 gap-2">
+                            {{-- Status Filter --}}
+                            <div class="d-flex align-items-center px-3 mb-3 gap-2">
 
-                                    <span class="small fw-bold">Status:</span>
+                                <span class="small fw-bold">Status:</span>
 
-                                    <div class="form-check form-switch mb-0">
-                                        <input class="form-check-input" type="checkbox" id="statusSwitch"
-                                            {{ request('status') === 'close' ? 'checked' : '' }}>
-                                    </div>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" id="statusSwitch"
+                                        {{ request('status') === 'close' ? 'checked' : '' }}>
+                                </div>
 
-                                    <span id="statusBadge"
-                                          class="badge {{ request('status') === 'close' ? 'bg-warning' : 'bg-success' }}">
+                                <span id="statusBadge"
+                                      class="badge {{ request('status') === 'close' ? 'bg-warning' : 'bg-success' }}">
                                         {{ request('status') === 'close' ? 'CLOSE' : 'OPEN' }}
                                     </span>
 
-                                </div>
+                            </div>
 
-                                <div class="table-responsive p-0">
+                            <div class="table-responsive p-0">
                                 <table class="table table-bordered align-items-center mb-0 datatable">
                                     <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>SSR No.</th>
-                                            <th>Date</th>
-                                            <th>Vessel</th>
-                                            <th>Item</th>
-                                            <th>Location</th>
-                                            <th>Verified</th>
-                                            <th>Approved</th>
-                                            <th>Procurement Approved</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>SSR No.</th>
+                                        <th>Date</th>
+                                        <th>Vessel</th>
+                                        <th>Item</th>
+                                        <th>Location</th>
+                                        <th>Verified</th>
+                                        <th>Approved</th>
+                                        <th>Procurement Approved</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
                                     @foreach($ssrs as $ssr)
@@ -151,10 +148,13 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="actionDropdown">
                                                         <li>
-                                                            <a href="{{ route('ssr.verify.show', $ssr) }}" class="dropdown-item" type="button">View</a>
+                                                            <a href="{{ route('ssr.approve.show', $ssr) }}" class="dropdown-item" type="button">View</a>
                                                         </li>
                                                         <li>
-                                                            <a href="{{ route('ssr.verify.edit', $ssr) }}" class="dropdown-item" type="button">Update</a>
+                                                            <a href="{{ route('ssr.approve.edit', $ssr) }}" class="dropdown-item" type="button">Update</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{ route('ssr.report.export', $ssr) }}" class="dropdown-item" type="button">Print</a>
                                                         </li>
                                                         <li>
                                                             <button class="dropdown-item text-danger" type="button">Delete</button>
@@ -183,20 +183,6 @@
                 </div>
             </div>
         </div>
-        <!-- Attachment Modal -->
-        <div class="modal fade" id="attachmentModal" tabindex="-1" aria-labelledby="attachmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <iframe id="attachmentFrame" src="" width="100%" height="500px" frameborder="0"></iframe>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
     @push('scripts')
         <script>
@@ -209,28 +195,6 @@
                 url.searchParams.set('status', status);
 
                 window.location.href = url.toString();
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const modal = new bootstrap.Modal(document.getElementById('attachmentModal'));
-                const iframe = document.getElementById('attachmentFrame');
-
-                document.querySelectorAll('.show-attachment').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const url = this.dataset.url;
-                        if(url) {
-                            iframe.src = "{{ asset('') }}" + url; // append base asset URL
-                            modal.show();
-                        } else {
-                            alert('No attachment available for this SSR.');
-                        }
-                    });
-                });
-
-                // Clear iframe when modal closes to avoid caching issues
-                document.getElementById('attachmentModal').addEventListener('hidden.bs.modal', function() {
-                    iframe.src = '';
-                });
             });
         </script>
     @endpush

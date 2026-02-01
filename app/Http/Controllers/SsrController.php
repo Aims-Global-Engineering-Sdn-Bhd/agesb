@@ -6,6 +6,7 @@ use App\Models\Ssr;
 use App\Http\Requests\StoreSsrRequest;
 use App\Http\Requests\UpdateSsrRequest;
 use App\Models\SsrItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use mysql_xdevapi\Exception;
@@ -76,6 +77,27 @@ class SsrController extends Controller
         ]);
     }
 
+    public function approveIndex(Request $request){
+        $selectedVessel = $request->get('vessel');
+        $status = $request->get('status','OPEN');
+
+        $ssrs = Ssr::when($selectedVessel, function ($query) use ($selectedVessel) {
+            $query->where('vessel', $selectedVessel);
+        })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', strtoupper($status));
+            })
+            ->where('verified_status','VERIFIED')
+            ->latest()
+            ->get();
+
+        return view('ssr.approve.index', [
+            'ssrs' => $ssrs,
+            'vessels' => $this->vessels,
+            'selectedVessel' => $selectedVessel,
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -86,6 +108,22 @@ class SsrController extends Controller
         return view('ssr.request.create', [
             'vessels'=>$this->vessels,
             'selectedVessel'=>$selectedVessel
+        ]);
+    }
+
+    public function reportIndex(Request $request){
+        $selectedVessel = $request->get('vessel');
+
+        $ssrs = Ssr::when($selectedVessel, function ($query) use ($selectedVessel) {
+            $query->where('vessel', $selectedVessel);
+        })
+            ->latest()
+            ->get();
+
+        return view('ssr.report.index', [
+            'ssrs' => $ssrs,
+            'vessels' => $this->vessels,
+            'selectedVessel' => $selectedVessel,
         ]);
     }
 
@@ -174,6 +212,18 @@ class SsrController extends Controller
         return view('ssr.request.show', compact('ssr','ssr_items'));
     }
 
+    public function verifyShow(Ssr $ssr){
+        $ssr_items = SsrItem::where('ssr_id',$ssr->id)->get();
+
+        return view('ssr.verify.show', compact('ssr','ssr_items'));
+    }
+
+    public function approveShow(Ssr $ssr){
+        $ssr_items = SsrItem::where('ssr_id',$ssr->id)->get();
+
+        return view('ssr.approve.show', compact('ssr','ssr_items'));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -192,6 +242,15 @@ class SsrController extends Controller
         $ssr_items = SsrItem::where('ssr_id', $ssr->id)->get();
 
         return view('ssr.verify.edit',  [
+            'ssr' => $ssr,
+            'ssr_items' => $ssr_items,
+            'vessels' => $this->vessels,]);
+    }
+
+    public function approveEdit(Ssr $ssr){
+        $ssr_items = SsrItem::where('ssr_id', $ssr->id)->get();
+
+        return view('ssr.approve.edit',  [
             'ssr' => $ssr,
             'ssr_items' => $ssr_items,
             'vessels' => $this->vessels,]);
@@ -311,11 +370,53 @@ class SsrController extends Controller
             return redirect()->route('ssr.verify.index')->with('success','SSR is successfully verified!');
     }
 
+    public function approveUpdate(Request $request, Ssr $ssr){
+
+        $request->validate([
+            'approved_status'=>'nullable|in:PENDING,APPROVED',
+            'approved_remark'=>'nullable|string'
+        ]);
+
+        $ssr->update([
+           'approved_status'=>$request->approved_status,
+           'approved_remark'=>$request->approved_remark,
+           'approved_by'=>auth()->id(),
+           'approved_at'=>now()
+        ]);
+
+        return redirect()->route('ssr.approve.index')->with('success','SSR is successfully approved!');
+    }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Ssr $ssr)
     {
         //
+    }
+
+    public function exportReport(Ssr $ssr){
+        //Load view and pass SSR + SSR Items data
+        $pdf = Pdf::loadView('ssr.report.report', compact('ssr'))->setPaper('a4', 'portrait');
+
+        $filename = 'SSR_' . $ssr->ssr_no . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    public function exportSummary(Request $request){
+        $vessel = $request->get('vessel');
+        $year = $request->get('year');
+
+        $ssrs = Ssr::with('ssr_items')
+            ->when($vessel, fn($q) => $q->where('vessel', $vessel))
+            ->when($year, fn($q) => $q->whereYear('date', $year))
+            ->get();
+
+        $pdf = Pdf::loadView('ssr.report.summary', compact('ssrs', 'vessel', 'year'))
+            ->setPaper('a4', 'landscape');
+
+        $filename = 'SSR_Summary_' . ($vessel ?? 'All') . '_' . ($year ?? now()->year) . '.pdf';
+        return $pdf->download($filename);
     }
 }

@@ -32,11 +32,26 @@ class Ssr extends Model
         'requested_by'
     ];
 
+    protected $casts = [
+        'date'=>'datetime',
+        'verified_at'=>'datetime',
+        'approved_at'=>'datetime',
+        'pro_at'=>'datetime'
+    ];
+
     public function ssr_items(){
         return $this->hasMany(SsrItem::class, 'ssr_id', 'id');
     }
 
     public function users(){
         return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function verifiedBy(){
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function approvedBy(){
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

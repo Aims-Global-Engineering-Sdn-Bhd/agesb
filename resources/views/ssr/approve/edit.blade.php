@@ -1,6 +1,6 @@
 @extends('layouts.user_type.auth')
 
-@section('title', 'Verify SSR')
+@section('title', 'Approve SSR')
 
 @section('content')
     <main class="main-content position-relative mt-4 border-radius-lg">
@@ -15,7 +15,7 @@
 
                         <div class="card-body px-4 pt-4 pb-4">
 
-                            <form action="{{ route('ssr.verify.update', $ssr) }}" method="POST" enctype="multipart/form-data" onsubmit="console.log('Submitting form'); return true;">
+                            <form action="{{ route('ssr.approve.update', $ssr) }}" method="POST" enctype="multipart/form-data" onsubmit="console.log('Submitting form'); return true;">
                                 @csrf
                                 @method('PUT')
 
@@ -126,16 +126,16 @@
                                         <div class="table-responsive">
                                             <table class="table table-bordered align-middle datatable">
                                                 <thead class="table-light">
-                                                    <tr class="text-center">
-                                                        <th>Description</th>
-                                                        <th>Unit</th>
-                                                        <th>Qty Req</th>
-                                                        <th>Balance</th>
-                                                        <th>Approved</th>
-                                                        <th>IMPA</th>
-                                                        <th>Remarks</th>
-                                                        <th>Status</th>
-                                                    </tr>
+                                                <tr class="text-center">
+                                                    <th>Description</th>
+                                                    <th>Unit</th>
+                                                    <th>Qty Req</th>
+                                                    <th>Balance</th>
+                                                    <th>Approved</th>
+                                                    <th>IMPA</th>
+                                                    <th>Remarks</th>
+                                                    <th>Status</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
                                                 @foreach($ssr_items as $index => $item)
@@ -143,26 +143,16 @@
                                                         <td>{{ $item->description }}</td>
                                                         <td>{{ $item->unit }}</td>
                                                         <td>
-                                                            <input type="number"
-                                                                   name="items[{{ $item->id }}][qty_required]"
-                                                                   value="{{ $item->quantity_req }}"
-                                                                   class="form-control form-control-sm">
+                                                            {{ $item->quantity_req }}
                                                         </td>
 
                                                         <td>
-                                                            <input type="number"
-                                                                   name="items[{{ $item->id }}][balance]"
-                                                                   value="{{ $item->balance }}"
-                                                                   class="form-control form-control-sm">
+                                                            {{ $item->balance }}
                                                         </td>
 
                                                         <td>
-                                                            <input type="number"
-                                                                   name="items[{{ $item->id }}][qty_approved]"
-                                                                   value="{{ $item->quantity_app }}"
-                                                                   class="form-control form-control-sm">
+                                                            {{ $item->quantity_app }}
                                                         </td>
-
                                                         <td>{{ $item->impa_code }}</td>
                                                         <td>{{ $item->remark }}</td>
                                                         <td>
@@ -190,7 +180,49 @@
 
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-2">
-                                            <label class="form-label">Verified By</label>
+                                            <small class="text-muted">Verified By</small>
+                                            <div class="fw-semibold">
+                                                {{ $ssr->verifiedBy->name ?? '-' }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-2">
+                                            <small class="text-muted">Designation</small>
+                                            <div class="fw-semibold">
+                                                {{ $ssr->verifiedBy->position ?? '-' }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <small class="text-muted">Remark</small>
+                                        <div class="fst-italic text-secondary">
+                                            {{ $ssr->verified_remark ?? '-' }}
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <small class="text-muted">Status</small>
+
+                                        <span class="badge
+                                            {{ match($ssr->verified_status ?? 'N/A') {
+                                                'VERIFIED' => 'bg-success',
+                                                'PENDING' => 'bg-warning',
+                                                default => 'bg-secondary',
+                                            } }}">
+                                            {{ $ssr->verified_status ?? 'N/A' }}
+                                        </span>
+                                    </div>
+                                </div>
+
+
+                                {{-- Approval --}}
+                                <div class="mb-4 p-3 border rounded bg-white">
+                                    <h6 class="mb-3 text-uppercase fw-bold text-primary">Approval</h6>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Approval</label>
                                             <input disabled class="form-control" value="{{ auth()->user()->name }}">
                                         </div>
 
@@ -204,8 +236,8 @@
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <label class="form-label">Remark</label>
-                                            <input type="text" name="verification_remark" class="form-control"
-                                                   value="{{ old('verified_remark', $ssr->verified_remark ?? '') }}"
+                                            <input type="text" name="approved_remark" class="form-control"
+                                                   value="{{ old('approved_remark', $ssr->approved_remark ?? '') }}"
                                                    placeholder="Enter any remark">
                                         </div>
                                     </div>
@@ -213,18 +245,18 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="small fw-bold">Status:</span>
                                         <div class="form-check form-switch">
-                                            <input type="checkbox" class="form-check-input" id="verifySwitch"
-                                                {{ old('verification_status', $ssr->verified_status) === 'VERIFIED' ? 'checked' : '' }}>
+                                            <input type="checkbox" class="form-check-input" id="approvedSwitch"
+                                                {{ old('approved_status', $ssr->approved_status) === 'APPROVED' ? 'checked' : '' }}>
 
-                                            <span id="verifyBadge" class="badge {{ $ssr->verified_status === 'VERIFIED' ? 'bg-success' : 'bg-warning' }}">
-                                                {{ old('verification_status', $ssr->verified_status) ?? 'PENDING' }}
+                                            <span id="approvedBadge" class="badge {{ $ssr->approved_status === 'APPROVED' ? 'bg-success' : 'bg-warning' }}">
+                                                {{ old('approved_status', $ssr->approved_status) ?? 'PENDING' }}
                                             </span>
                                         </div>
                                     </div>
 
                                     {{-- Hidden input for submit --}}
-                                    <input type="hidden" name="verification_status" id="verificationStatus"
-                                           value="{{ old('verification_status', $ssr->verified_status) ?? 'PENDING' }}">
+                                    <input type="hidden" name="approved_status" id="approvedStatus"
+                                           value="{{ old('approved_status', $ssr->approved_status) ?? 'PENDING' }}">
 
                                 </div>
 
@@ -240,23 +272,23 @@
     </main>
     @push('scripts')
         <script>
-            $('#verifySwitch').on('change', function () {
+            $('#approvedSwitch').on('change', function () {
 
                 if ($(this).is(':checked')) {
-                    $('#verifyBadge')
+                    $('#approvedBadge')
                         .removeClass('bg-warning')
                         .addClass('bg-success')
-                        .text('VERIFIED');
+                        .text('APPROVED');
 
-                    $('#verificationStatus').val('VERIFIED');
+                    $('#approvedStatus').val('APPROVED');
 
                 } else {
-                    $('#verifyBadge')
+                    $('#approvedBadge')
                         .removeClass('bg-success')
                         .addClass('bg-warning')
                         .text('PENDING');
 
-                    $('#verificationStatus').val('PENDING');
+                    $('#approvedStatus').val('PENDING');
                 }
 
             });
