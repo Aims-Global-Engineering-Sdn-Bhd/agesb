@@ -102,7 +102,7 @@
                                             </td>
 
                                             <td>
-                                                @if($ssr->approved_status === 'PENDING')
+                                                @if($ssa->approved_status === 'PENDING')
                                                     <span class="badge bg-warning text-white">PENDING</span>
                                                 @elseif($ssa->approved_status === 'APPROVED')
                                                     <span class="badge bg-success">APPROVED</span>
@@ -134,7 +134,7 @@
                                                 ];
 
                                                 // Default class if status not in the array
-                                                $badgeClass = $statusColors[$ssr->status] ?? 'bg-secondary';
+                                                $badgeClass = $statusColors[$ssa->status] ?? 'bg-secondary';
                                             @endphp
 
                                             <td class="text-center">
@@ -162,7 +162,7 @@
                                                         <li>
                                                             <button class="dropdown-item show-attachment"
                                                                     type="button"
-                                                                    data-url="{{ $ssr->doc_url ?? '' }}">
+                                                                    data-url="{{ $ssa->doc_url ?? '' }}">
                                                                 Show Attachment
                                                             </button>
                                                         </li>
@@ -175,7 +175,6 @@
                                         </tr>
                                     @endforeach
                                     </tbody>
-
                                 </table>
                             </div>
                         </div>
