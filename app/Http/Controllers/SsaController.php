@@ -191,7 +191,7 @@ class SsaController extends Controller
 
     // ---------------- UPDATE -----------------
     public function update(Request $request, Ssa $ssa)
-    {
+    {   
         $validated = $request->validate([
             'ssa_no' => 'required|string|max:50',
             'location' => 'required|string|max:255',
@@ -262,6 +262,10 @@ class SsaController extends Controller
                     'status'      => 'OPEN',
                 ]);
             }
+        }
+        // Soft delete items that user removed
+        if ($request->has('delete_items') && !empty($request->delete_items)) {
+            SsaItem::whereIn('id', $request->delete_items)->delete();
         }
         return redirect()->route('ssa.request.index')->with('success','SSA updated successfully.');
     }

@@ -178,7 +178,7 @@
 
                                 {{-- Submit --}}
                                 <div class="text-end">
-                                    <button class="btn btn-primary">Update SSA</button>
+                                    <button type="button" class="btn btn-primary" id="submitBtn">Update SSA</button>
                                 </div>
                             </form>
                         </div>
@@ -194,6 +194,7 @@
             let table = $('#itemsTable').DataTable();
             let hiddenContainer = $('#hiddenInputs');
             let fileStorage = {}; // Store files here!
+            let deletedItemIds = []; // Track deleted items
 
             // Load existing items
             @foreach ($ssa_items as $i)
@@ -204,17 +205,8 @@
                     "{{ $i->assistance ?? '' }}",
                     "{{ $i->remark ?? '' }}",
                     "{{ $i->doc_url ? basename($i->doc_url) : '' }}",
-                    `<button type="button" class="btn btn-danger btn-sm removeRow">X</button>`
+                    `<button type="button" class="btn btn-danger btn-sm removeRow" data-existing="true" data-id="{{ $i->id }}">X</button>`
                 ]).draw(false);
-
-                hiddenContainer.append(`
-<input type="hidden" name="items[${itemIndex}][aa]" value="{{ $i->description }}">
-<input type="hidden" name="items[${itemIndex}][bb]" value="{{ $i->model_no ?? '' }}">
-<input type="hidden" name="items[${itemIndex}][cc]" value="{{ $i->remedial ?? '' }}">
-<input type="hidden" name="items[${itemIndex}][dd]" value="{{ $i->assistance ?? '' }}">
-<input type="hidden" name="items[${itemIndex}][remark]" value="{{ $i->remark ?? '' }}">
-`);
-                itemIndex++;
             @endforeach
 
             // Add new item
@@ -226,11 +218,9 @@
                 let dd = $('#dd').val();
                 let remark = $('#remark').val();
 
-                // GET THE ACTUAL FILE
                 let fileObj = $('#ee')[0].files[0];
                 let fileName = fileObj ? fileObj.name : 'No file';
 
-                // STORE THE FILE OBJECT
                 fileStorage[itemIndex] = fileObj;
 
                 table.row.add([
@@ -240,7 +230,7 @@
                     dd + `<input type="hidden" name="items[${itemIndex}][dd]" value="${dd}">`,
                     remark + `<input type="hidden" name="items[${itemIndex}][remark]" value="${remark}">`,
                     fileName,
-                    `<button type="button" class="btn btn-danger btn-sm removeRow">X</button>`
+                    `<button type="button" class="btn btn-danger btn-sm removeRow" data-index="${itemIndex}">X</button>`
                 ]).draw(false);
 
                 itemIndex++;
@@ -249,18 +239,27 @@
 
             // Remove row
             $('#itemsTable tbody').on('click', '.removeRow', function() {
-                let row = table.row($(this).parents('tr'));
-                let rowIndex = row.index();
-                row.remove().draw();
-                hiddenContainer.find(`input[name^="items[${rowIndex}]"]`).remove();
-                delete fileStorage[rowIndex];
+                let isExisting = $(this).data('existing');
+                let itemId = $(this).data('id');
+
+                if (isExisting) {
+                    // For existing items, track for deletion
+                    deletedItemIds.push(itemId);
+                    let row = table.row($(this).parents('tr'));
+                    row.remove().draw();
+                } else {
+                    // For new items, remove hidden inputs and file
+                    let index = $(this).data('index');
+                    let row = table.row($(this).parents('tr'));
+                    row.remove().draw();
+                    hiddenContainer.find(`input[name^="items[${index}]"]`).remove();
+                    delete fileStorage[index];
+                }
             });
 
             // SUBMIT FORM WITH FILES
-            $('form').on('submit', function(e) {
-                e.preventDefault();
-
-                let formData = new FormData(this);
+            $('#submitBtn').click(function() {
+                let formData = new FormData($('form')[0]);
 
                 // ADD THE FILES TO FormData
                 Object.keys(fileStorage).forEach(function(index) {
@@ -269,9 +268,16 @@
                     }
                 });
 
+                // ADD DELETED ITEM IDS
+                if (deletedItemIds.length > 0) {
+                    deletedItemIds.forEach(function(id) {
+                        formData.append('delete_items[]', id);
+                    });
+                }
+
                 // SUBMIT
                 $.ajax({
-                    url: $(this).attr('action'),
+                    url: $('form').attr('action'),
                     type: 'POST',
                     data: formData,
                     processData: false,
