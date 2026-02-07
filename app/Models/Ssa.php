@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ssa extends Model
 {
+
+    use SoftDeletes;
+
     protected $fillable = [
         'ssa_no',
         'location',
@@ -43,6 +47,10 @@ class Ssa extends Model
         return $this->hasMany(SsaItem::class, 'ssa_id', 'id');
     }
 
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function users(){
         return $this->belongsTo(User::class, 'requested_by');
     }
@@ -53,5 +61,9 @@ class Ssa extends Model
 
     public function approvedBy(){
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function proBy(){
+        return $this->belongsTo(User::class, 'pro_by');
     }
 }
