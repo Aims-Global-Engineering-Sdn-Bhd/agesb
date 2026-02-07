@@ -175,11 +175,8 @@
                                             @endif
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
-
-
 
                             {{-- Attachment --}}
                             <div class="mb-4 p-4 border rounded bg-light">
