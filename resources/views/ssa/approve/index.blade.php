@@ -200,18 +200,52 @@
                 </div>
             </div>
         </div>
+        <!-- Attachment Modal -->
+        <div class="modal fade" id="attachmentModal" tabindex="-1" aria-labelledby="attachmentModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <iframe id="attachmentFrame" src="" width="100%" height="500px" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     @push('scripts')
         <script>
             document.getElementById('statusSwitch').addEventListener('change', function() {
-
                 const isClose = this.checked;
                 const status = isClose ? 'close' : 'open';
-
                 const url = new URL(window.location.href);
                 url.searchParams.set('status', status);
-
                 window.location.href = url.toString();
+            });
+
+            // Add attachment modal javascript
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = new bootstrap.Modal(document.getElementById('attachmentModal'));
+                const iframe = document.getElementById('attachmentFrame');
+
+                document.querySelectorAll('.show-attachment').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = this.dataset.url;
+                        if (url) {
+                            iframe.src = "{{ asset('') }}" + url;
+                            modal.show();
+                        } else {
+                            alert('No attachment available for this SSA.');
+                        }
+                    });
+                });
+
+                document.getElementById('attachmentModal').addEventListener('hidden.bs.modal', function() {
+                    iframe.src = '';
+                });
             });
         </script>
     @endpush

@@ -205,7 +205,27 @@
         </div>
     </main>
     @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = new bootstrap.Modal(document.getElementById('attachmentModal'));
+                const iframe = document.getElementById('attachmentFrame');
+
+                document.querySelectorAll('.show-attachment').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = this.dataset.url;
+                        if (url) {
+                            iframe.src = "{{ asset('') }}" + url;
+                            modal.show();
+                        } else {
+                            alert('No attachment available for this SSA.');
+                        }
+                    });
+                });
+
+                document.getElementById('attachmentModal').addEventListener('hidden.bs.modal', function() {
+                    iframe.src = '';
+                });
+            });
+        </script>
     @endpush
-
-
 @endsection
