@@ -173,7 +173,7 @@
                                             </div>
 
                                             <small class="text-muted d-block">By:
-                                                {{ $ssa->procurementBy->name ?? '-' }}</small>
+                                                {{ $ssa->proBy->name ?? '-' }}</small>
                                             <small class="text-muted d-block">Date:
                                                 {{ optional($ssa->pro_at)->format('d M Y, h:i A') ?? '-' }}</small>
 

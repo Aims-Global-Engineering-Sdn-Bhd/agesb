@@ -117,9 +117,8 @@
                                                 {{ $ssa->verifiedBy->name ?? '-' }}</small>
                                             <small class="text-muted d-block">Date:
                                                 {{ optional($ssa->verified_at)->format('d M Y, h:i A') ?? '-' }}</small>
-                                            <br>
+
                                             @if ($ssa->verified_remark)
-                                                <small class="text-muted d-block">Remark:</small>
                                                 <div class="mt-2 small fst-italic text-secondary">
                                                     "{{ $ssa->verified_remark }}"
                                                 </div>
@@ -147,10 +146,9 @@
                                             <small class="text-muted d-block">By:
                                                 {{ $ssa->approvedBy->name ?? '-' }}</small>
                                             <small class="text-muted d-block">Date:
-                                                {{ optional($ssa->approved_at)->format('d M Y, h:i A') ?? '-' }}</small><br>
-                                            <br>
+                                                {{ optional($ssa->approved_at)->format('d M Y, h:i A') ?? '-' }}</small>
+                                                
                                             @if ($ssa->approved_remark)
-                                                <small class="text-muted d-block">Remark:</small>
                                                 <div class="mt-2 small fst-italic text-secondary">
                                                     "{{ $ssa->approved_remark }}"
                                                 </div>
