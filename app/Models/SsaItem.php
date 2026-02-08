@@ -17,6 +17,9 @@ class SsaItem extends Model
         'remark',
         'status',
         'ssa_id',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
     protected $dates = ['deleted_at'];
     public function ssa(){

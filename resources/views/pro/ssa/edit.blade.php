@@ -68,7 +68,8 @@
                                             <select disabled name="vessel" class="form-select" required>
                                                 @foreach ($vessels as $code => $name)
                                                     <option value="{{ $code }}"
-                                                        {{ $ssa->vessel == $code ? 'selected' : '' }}>{{ $name }}</option>
+                                                        {{ $ssa->vessel == $code ? 'selected' : '' }}>{{ $name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -79,13 +80,18 @@
                                                 value="{{ \Carbon\Carbon::parse($ssa->date)->format('Y-m-d') }}" required>
                                         </div>
                                     </div>
-
+                                    
                                     @php
                                         $departments = ['ENGINE' => 'Engine', 'DECK' => 'Deck'];
-                                        $items = [
-                                            'DECK STORES' => 'Deck Stores',
-                                            'ENGINE STORE' => 'Engine Store',
-                                            'SPARE PART' => 'Spare Part',
+                                        $ssaRaisedOptions = [
+                                            'LSA/FFA ANNUAL SERVICING',
+                                            'FLAG STATE INSPECTION',
+                                            'EXT/INT AUDIT',
+                                            'VOYAGE REPAIR',
+                                            'CLASS SURVEY',
+                                            'SAFETY INSPECTION',
+                                            'VESSEL INSPECTION',
+                                            'OTHERS',
                                         ];
                                     @endphp
 
@@ -103,12 +109,13 @@
                                         </div>
 
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label d-block">Item</label>
-                                            @foreach ($items as $k => $v)
+                                            <label class="form-label d-block">SSA Raised By</label>
+                                            @foreach ($ssaRaisedOptions as $option)
                                                 <div class="form-check form-check-inline">
-                                                    <input disabled class=" form-check-input" type="radio" name="item"
-                                                        value="{{ $k }}" {{ $ssa->item == $k ? 'checked' : '' }}>
-                                                    <label class="form-check-label">{{ $v }}</label>
+                                                    <input disabled class=" form-check-input" type="radio"
+                                                        name="ssa_raised" value="{{ $option }}"
+                                                        {{ $ssa->ssa_raised == $option ? 'checked' : '' }}>
+                                                    <label class="form-check-label">{{ $option }}</label>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -140,11 +147,9 @@
                                                 <thead class="table-light">
                                                     <tr class="text-center">
                                                         <th>Description</th>
-                                                        <th>Unit</th>
-                                                        <th>Qty Req</th>
-                                                        <th>Balance</th>
-                                                        <th>Approved</th>
-                                                        <th>IMPA</th>
+                                                        <th>Maker/Model No.</th>
+                                                        <th>Remedial</th>
+                                                        <th>Assistance</th>
                                                         <th>Remarks</th>
                                                         <th>Status</th>
                                                     </tr>
@@ -153,19 +158,9 @@
                                                     @foreach ($ssa_items as $index => $item)
                                                         <tr>
                                                             <td>{{ $item->description }}</td>
-                                                            <td>{{ $item->unit }}</td>
-                                                            <td>
-                                                                {{ $item->quantity_req }}
-                                                            </td>
-
-                                                            <td>
-                                                                {{ $item->balance }}
-                                                            </td>
-
-                                                            <td>
-                                                                {{ $item->quantity_app }}
-                                                            </td>
-                                                            <td>{{ $item->impa_code }}</td>
+                                                            <td>{{ $item->model_no }}</td>
+                                                            <td>{{ $item->remedial }}</td>
+                                                            <td>{{ $item->assistance }}</td>
                                                             <td>{{ $item->remark }}</td>
                                                             <td>
                                                                 <span
