@@ -34,7 +34,7 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-2">
                                             <label class="form-label">Requested By</label>
-                                            <input disabled class="form-control" value="{{ $ssa->users->name ?? '-' }}">
+                                            <input disabled class="form-control" value="{{ $ssa->user->name ?? '-' }}">
                                         </div>
 
                                         <div class="col-md-6 mb-2">
