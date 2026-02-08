@@ -105,6 +105,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/request/edit/{ssa}', [SsaController::class, 'edit'])->name('request.edit');
         Route::put('/request/update/{ssa}',[SsaController::class, 'update'])->name('request.update');
         Route::get('/request/show/{ssa}', [SsaController::class, 'show'])->name('request.show');
+        Route::delete('/destroy/{ssa}', [SsaController::class, 'destroy'])->name('destroy');
 
         //SSA->Verification routes here
         Route::get('/verify',[SsaController::class, 'verifyIndex'])->name('verify.index');
@@ -170,6 +171,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/ssa/show/{ssa}', [SsaController::class, 'show'])->name('ssa.show');
         Route::get('/ssa/edit/{ssa}', [SsaController::class, 'proEdit'])->name('ssa.edit');
         Route::put('/ssa/update/{ssa}', [SsaController::class, 'proUpdate'])->name('ssa.update');
+        Route::delete('/ssa/{ssa}', [SsaController::class, 'destroy'])->name('ssa.destroy');
 
         Route::get('/do', [DeliveryOrderController::class, 'index'])->name('do.index');
         Route::get('/do/create', [DeliveryOrderController::class, 'create'])->name('do.create');

@@ -115,7 +115,7 @@
                                                     @endif
 
                                                     {{-- Remark under badge --}}
-                                                    @if(!empty($ssa->pro_remark))
+                                                    @if (!empty($ssa->pro_remark))
                                                         <div class="text-muted small mt-1">
                                                             Remark: {{ $ssa->pro_remark }}
                                                         </div>
@@ -157,8 +157,14 @@
                                                                     class="dropdown-item" type="button">Print</a>
                                                             </li>
                                                             <li>
-                                                                <button class="dropdown-item text-danger"
-                                                                    type="button">Delete</button>
+                                                                <form action="{{ route('ssa.destroy', $ssa) }}"
+                                                                    method="POST" style="display:inline;"
+                                                                    onsubmit="return confirm('Are you sure you want to delete this SSA? This action cannot be undone.')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button class="dropdown-item text-danger"
+                                                                        type="submit">Delete</button>
+                                                                </form>
                                                             </li>
                                                             <li>
                                                                 <button class="dropdown-item show-attachment" type="button"
