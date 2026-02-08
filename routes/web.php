@@ -168,7 +168,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         //SSA Routes here
         Route::get('/ssa', [SsaController::class, 'proIndex'])->name('ssa.index');
-        Route::get('/ssa/show/{ssa}', [SsaController::class, 'show'])->name('ssa.show');
+        Route::get('/ssa/show/{ssa}', [SsaController::class, 'proShow'])->name('ssa.show');
         Route::get('/ssa/edit/{ssa}', [SsaController::class, 'proEdit'])->name('ssa.edit');
         Route::put('/ssa/update/{ssa}', [SsaController::class, 'proUpdate'])->name('ssa.update');
         Route::delete('/ssa/{ssa}', [SsaController::class, 'destroy'])->name('ssa.destroy');

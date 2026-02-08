@@ -118,6 +118,13 @@ class SsaController extends Controller
             ->with('vessels', $this->vessels);
     }
 
+    public function proShow(Ssa $ssa)
+    {
+        $ssa_items = $ssa->ssa_items;
+        return view('pro.ssa.show', compact('ssa', 'ssa_items'))
+            ->with('vessels', $this->vessels);
+    }
+
     public function show(Ssa $ssa)
     {
         $ssa_items = $ssa->ssa_items; // relationship in your Ssa model
