@@ -45,6 +45,18 @@
 
                             </ul>
 
+                                <div class="row   justify-content-center">
+                                    <div class="col-md-10">
+                                        <div class="alert alert-danger text-white alert-dismissible fade show" role="alert">
+                                            <strong>Important:</strong> Once the form is submitted, the <strong>Delivery Order Details</strong> cannot be edited.
+                                            Please ensure all details are accurate before submitting.
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
                             <div class="table-responsive p-0">
                                 <table class="table table-bordered align-items-center mb-0 datatable">
                                     <thead>
@@ -75,9 +87,6 @@
                                                         <ul class="dropdown-menu" aria-labelledby="actionDropdown">
                                                             <li>
                                                                 <a href="{{ route('pro.do.show', $do) }}" class="dropdown-item" type="button">View</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="{{--{{ route('pro.ssr.edit', $ssr) }}--}}" class="dropdown-item" type="button">Update</a>
                                                             </li>
                                                             <li>
                                                                 <a href="{{ route('pro.do.report', $do) }}" class="dropdown-item" type="button">Print</a>

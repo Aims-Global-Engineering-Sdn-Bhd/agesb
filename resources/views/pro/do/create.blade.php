@@ -17,8 +17,14 @@
                         <div class="card-body px-4 pt-4 pb-4">
                             <form method="POST" action="{{ route('pro.do.store') }}">
                                 @csrf
+                                <div class="alert alert-danger text-white alert-dismissible fade show" role="alert">
+                                    <strong>Important:</strong> Once the form is submitted, the <strong>Delivery Order Details</strong> cannot be edited.
+                                    Please ensure all details are accurate before submitting.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
 
                                 <div class="card shadow-sm p-4 mb-4">
+
                                     <h4 class="mb-4 text-primary">Delivery Order Details</h4>
 
                                     <div class="row mb-2">
@@ -86,6 +92,7 @@
 
                                 <!-- PR Items Section -->
                                 <div class="card shadow-sm p-4 mb-4">
+
                                     <h4 class="mb-4 text-primary">PR Items</h4>
 
                                     <div class="row g-3 align-items-end">

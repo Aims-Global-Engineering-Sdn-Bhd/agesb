@@ -1,6 +1,6 @@
 @extends('layouts.user_type.auth')
 
-@section('title', 'PR Confirmation')
+@section('title', 'PR Approval')
 
 @section('content')
 
