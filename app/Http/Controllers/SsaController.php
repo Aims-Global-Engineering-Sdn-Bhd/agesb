@@ -277,6 +277,7 @@ class SsaController extends Controller
             'department'=>$validated['department'],
             'ssa_raised'=>$validated['ssa_raised'],
             'doc_url'=>$validated['attachment'] ?? $ssa->doc_url,
+            'updated_by' => Auth::id(),
         ]);
 
         // Insert SSA items WITH FILE UPLOAD
