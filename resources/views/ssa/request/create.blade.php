@@ -51,7 +51,7 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="ssa_date" class="form-label">SSA Date</label>
                                             <input type="date" name="ssa_date" id="ssa_date" class="form-control"
-                                                required>
+                                                value="{{ date('Y-m-d') }}" required>
                                         </div>
                                     </div>
 
@@ -91,7 +91,8 @@
                                             @foreach ($ssaRaisedOptions as $option)
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="ssa_raised"
-                                                        id="{{ Str::slug($option) }}" value="{{ $option }}" required>
+                                                        id="{{ Str::slug($option) }}" value="{{ $option }}"
+                                                        required>
                                                     <label class="form-check-label" for="{{ Str::slug($option) }}">
                                                         {{ $option }}
                                                     </label>
