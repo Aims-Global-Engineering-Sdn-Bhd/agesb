@@ -8,6 +8,7 @@ use App\Http\Requests\StorePurchaseRequestRequest;
 use App\Http\Requests\UpdatePurchaseRequestRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -168,35 +169,47 @@ class PurchaseRequestController extends Controller
             'items.*.remarks'=>'nullable|string'
         ]);
 
-        $pr_no = PurchaseRequest::generatePRNo($request->vessel);
+        DB::beginTransaction();
 
-        $pr = PurchaseRequest::create([
-            'item_req' => $request->category === 'Others' ? $request->category_others : $request->category,
-            'vessel' => $request->vessel,
-            'title'=>$request->title,
-            'date'=>now(),
-            'confirmed_status'=>'PENDING',
-            'approved_status'=>'PENDING',
-            'pro_status'=>'PENDING',
-            'status'=>'OPEN',
-            'requested_by'=> auth()->id(),
-            'pr_no'=>$pr_no
-        ]);
+        try{
+            $pr_no = PurchaseRequest::generatePRNo($request->vessel);
 
-        if($request->has('items')){
-            foreach($request->items as $item){
-                PrItem::create([
-                    'pr_id'=>$pr->id,
-                    'description'=>$item['description'],
-                    'unit'=>$item['unit'],
-                    'quantity'=>$item['qty'],
-                    'remark'=>$item['remarks'],
-                    'status'=>'OPEN'
-                ]);
+            $pr = PurchaseRequest::create([
+                'item_req' => $request->category === 'Others' ? $request->category_others : $request->category,
+                'vessel' => $request->vessel,
+                'title'=>$request->title,
+                'date'=>now(),
+                'confirmed_status'=>'PENDING',
+                'approved_status'=>'PENDING',
+                'pro_status'=>'PENDING',
+                'status'=>'OPEN',
+                'requested_by'=> auth()->id(),
+                'pr_no'=>$pr_no
+            ]);
+
+            if($request->has('items')){
+                foreach($request->items as $item){
+                    PrItem::create([
+                        'pr_id'=>$pr->id,
+                        'description'=>$item['description'],
+                        'unit'=>$item['unit'],
+                        'quantity'=>$item['qty'],
+                        'remark'=>$item['remarks'],
+                        'status'=>'OPEN'
+                    ]);
+                }
             }
-        }
 
-        return redirect()->route('pr.request.index')->with('success','Successfully created new PR!');
+            DB::commit();
+
+            return redirect()->route('pr.request.index')->with('success','Successfully created new PR!');
+        }catch (\Exception $e){
+            DB::rollBack();
+
+            return redirect()->back()
+                ->with('error', 'Failed to update SSR: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**

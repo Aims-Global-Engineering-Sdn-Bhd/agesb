@@ -171,65 +171,79 @@ class SsaController extends Controller
 
         ]);
 
-        // Upload main attachment
-        if($request->hasFile('attachment')){
-            $file = $request->file('attachment');
-            $filename = date('Ymd_His').'_'.$file->getClientOriginalName();
-            $destination = public_path('uploads/attachments');
-            if(!file_exists($destination)) mkdir($destination, 0777, true);
-            $file->move($destination, $filename);
-            $validated['attachment'] = 'uploads/attachments/'.$filename;
-        }
+        DB::beginTransaction();
 
-        $ssa = Ssa::create([
-            'ssa_no'=>$validated['ssa_no'],
-            'location'=>$validated['location'],
-            'vessel'=>$validated['vessel'],
-            'date'=>$validated['ssa_date'],
-            'department'=>$validated['department'],
-            'ssa_raised'=>$validated['ssa_raised'],
-            'doc_url'=>$validated['attachment'] ?? null,
-            'status'=>'OPEN',
-            'verified_status'=>'PENDING',
-            'approved_status'=>'PENDING',
-            'pro_status'=>'PENDING',
-            'created_by'=>Auth::id(),
-        ]);
+        try{
+            // Upload main attachment
+            if($request->hasFile('attachment')){
+                $file = $request->file('attachment');
+                $filename = date('Ymd_His').'_'.$file->getClientOriginalName();
+                $destination = public_path('uploads/attachments');
+                if(!file_exists($destination)) mkdir($destination, 0777, true);
+                $file->move($destination, $filename);
+                $validated['attachment'] = 'uploads/attachments/'.$filename;
+            }
 
-        // Insert SSA items WITH FILE UPLOAD
-        if ($request->has('items')) {
-            foreach ($request->items as $index => $item) {
+            $ssa = Ssa::create([
+                'ssa_no'=>$validated['ssa_no'],
+                'location'=>$validated['location'],
+                'vessel'=>$validated['vessel'],
+                'date'=>$validated['ssa_date'],
+                'department'=>$validated['department'],
+                'ssa_raised'=>$validated['ssa_raised'],
+                'doc_url'=>$validated['attachment'] ?? null,
+                'status'=>'OPEN',
+                'verified_status'=>'PENDING',
+                'approved_status'=>'PENDING',
+                'pro_status'=>'PENDING',
+                'created_by'=>Auth::id(),
+            ]);
 
-                $docPath = null;
+            // Insert SSA items WITH FILE UPLOAD
+            if ($request->has('items')) {
+                foreach ($request->items as $index => $item) {
 
-                if ($request->hasFile("items.$index.ee")) {
-                    $file = $request->file("items.$index.ee");
-                    $filename = time().'_'.$file->getClientOriginalName();
-                    $path = public_path('uploads/ssa_items');
+                    $docPath = null;
 
-                    if (!file_exists($path)) {
-                        mkdir($path, 0777, true);
+                    if ($request->hasFile("items.$index.ee")) {
+                        $file = $request->file("items.$index.ee");
+                        $filename = time().'_'.$file->getClientOriginalName();
+                        $path = public_path('uploads/ssa_items');
+
+                        if (!file_exists($path)) {
+                            mkdir($path, 0777, true);
+                        }
+
+                        $file->move($path, $filename);
+                        $docPath = 'uploads/ssa_items/'.$filename;
                     }
 
-                    $file->move($path, $filename);
-                    $docPath = 'uploads/ssa_items/'.$filename;
+                    $ssa->ssa_items()->create([
+                        'description' => $item['aa'] ?? null,
+                        'model_no'    => $item['bb'] ?? null,
+                        'remedial'    => $item['cc'] ?? null,
+                        'assistance'  => $item['dd'] ?? null,
+                        'remark'      => $item['remark'] ?? null,
+                        'doc_url'     => $docPath,
+                        'status'      => 'OPEN',
+                        'created_by'  => Auth::id(),
+                        'updated_by'  => Auth::id(),
+                    ]);
                 }
-
-                $ssa->ssa_items()->create([
-                    'description' => $item['aa'] ?? null,
-                    'model_no'    => $item['bb'] ?? null,
-                    'remedial'    => $item['cc'] ?? null,
-                    'assistance'  => $item['dd'] ?? null,
-                    'remark'      => $item['remark'] ?? null,
-                    'doc_url'     => $docPath,
-                    'status'      => 'OPEN',
-                    'created_by'  => Auth::id(),
-                    'updated_by'  => Auth::id(),
-                ]);
             }
+
+            DB::commit();
+
+            return redirect()->route('ssa.request.index')->with('success','SSA created successfully.');
+        } catch (\Exception $e){
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to upload service reports: ' . $e->getMessage());
         }
 
-        return redirect()->route('ssa.request.index')->with('success','SSA created successfully.');
+
     }
 
     // ---------------- EDIT -----------------
@@ -267,76 +281,90 @@ class SsaController extends Controller
             'items.*.ee' => 'nullable|file|mimes:pdf,jpg,jpeg,png,gif|max:4096',
         ]);
 
-        // Update attachment
-        if($request->hasFile('attachment')){
-            if($ssa->doc_url && file_exists(public_path($ssa->doc_url))){
-                unlink(public_path($ssa->doc_url));
+        DB::beginTransaction();
+
+        try{
+            // Update attachment
+            if($request->hasFile('attachment')){
+                if($ssa->doc_url && file_exists(public_path($ssa->doc_url))){
+                    unlink(public_path($ssa->doc_url));
+                }
+
+                $file = $request->file('attachment');
+                $filename = date('Ymd_His').'_'.$file->getClientOriginalName();
+                $destination = public_path('uploads/attachments');
+                if(!file_exists($destination)) mkdir($destination, 0777, true);
+                $file->move($destination, $filename);
+                $validated['attachment'] = 'uploads/attachments/'.$filename;
             }
 
-            $file = $request->file('attachment');
-            $filename = date('Ymd_His').'_'.$file->getClientOriginalName();
-            $destination = public_path('uploads/attachments');
-            if(!file_exists($destination)) mkdir($destination, 0777, true);
-            $file->move($destination, $filename);
-            $validated['attachment'] = 'uploads/attachments/'.$filename;
-        }
+            $ssa->update([
+                'ssa_no'=>$validated['ssa_no'],
+                'location'=>$validated['location'],
+                'vessel'=>$validated['vessel'],
+                'date'=>$validated['ssa_date'],
+                'department'=>$validated['department'],
+                'ssa_raised'=>$validated['ssa_raised'],
+                'doc_url'=>$validated['attachment'] ?? $ssa->doc_url,
+                'updated_by' => Auth::id(),
+            ]);
 
-        $ssa->update([
-            'ssa_no'=>$validated['ssa_no'],
-            'location'=>$validated['location'],
-            'vessel'=>$validated['vessel'],
-            'date'=>$validated['ssa_date'],
-            'department'=>$validated['department'],
-            'ssa_raised'=>$validated['ssa_raised'],
-            'doc_url'=>$validated['attachment'] ?? $ssa->doc_url,
-            'updated_by' => Auth::id(),
-        ]);
+            // Insert SSA items WITH FILE UPLOAD
+            if ($request->has('items')) {
+                foreach ($request->items as $index => $item) {
 
-        // Insert SSA items WITH FILE UPLOAD
-        if ($request->has('items')) {
-            foreach ($request->items as $index => $item) {
+                    $docPath = null;
 
-                $docPath = null;
+                    if ($request->hasFile("items.$index.ee")) {
+                        $file = $request->file("items.$index.ee");
+                        $filename = time().'_'.$file->getClientOriginalName();
+                        $path = public_path('uploads/ssa_items');
 
-                if ($request->hasFile("items.$index.ee")) {
-                    $file = $request->file("items.$index.ee");
-                    $filename = time().'_'.$file->getClientOriginalName();
-                    $path = public_path('uploads/ssa_items');
+                        if (!file_exists($path)) {
+                            mkdir($path, 0777, true);
+                        }
 
-                    if (!file_exists($path)) {
-                        mkdir($path, 0777, true);
+                        $file->move($path, $filename);
+                        $docPath = 'uploads/ssa_items/'.$filename;
                     }
 
-                    $file->move($path, $filename);
-                    $docPath = 'uploads/ssa_items/'.$filename;
-                }
-
-                $ssa->ssa_items()->create([
-                    'description' => $item['aa'] ?? null,
-                    'model_no'    => $item['bb'] ?? null,
-                    'remedial'    => $item['cc'] ?? null,
-                    'assistance'  => $item['dd'] ?? null,
-                    'remark'      => $item['remark'] ?? null,
-                    'doc_url'     => $docPath,
-                    'status'      => 'OPEN',
-                    'created_by'  => Auth::id(),
-                    'updated_by'  => Auth::id(),
-                ]);
-            }
-        }
-        // Soft delete items that user removed
-        if ($request->has('delete_items') && !empty($request->delete_items)) {
-            foreach ($request->delete_items as $itemId) {
-                $item = SsaItem::find($itemId);
-                if ($item) {
-                    $item->deleted_by = Auth::id(); // set who deleted it
-                    $item->save();
-                    $item->delete(); // soft delete
+                    $ssa->ssa_items()->create([
+                        'description' => $item['aa'] ?? null,
+                        'model_no'    => $item['bb'] ?? null,
+                        'remedial'    => $item['cc'] ?? null,
+                        'assistance'  => $item['dd'] ?? null,
+                        'remark'      => $item['remark'] ?? null,
+                        'doc_url'     => $docPath,
+                        'status'      => 'OPEN',
+                        'created_by'  => Auth::id(),
+                        'updated_by'  => Auth::id(),
+                    ]);
                 }
             }
+            // Soft delete items that user removed
+            if ($request->has('delete_items') && !empty($request->delete_items)) {
+                foreach ($request->delete_items as $itemId) {
+                    $item = SsaItem::find($itemId);
+                    if ($item) {
+                        $item->deleted_by = Auth::id(); // set who deleted it
+                        $item->save();
+                        $item->delete(); // soft delete
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('ssa.request.index')->with('success','SSA updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to upload service reports: ' . $e->getMessage());
         }
 
-        return redirect()->route('ssa.request.index')->with('success','SSA updated successfully.');
+
     }
 
     // ---------------- VERIFY -----------------

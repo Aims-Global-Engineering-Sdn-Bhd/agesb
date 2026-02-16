@@ -172,7 +172,9 @@ class SsrController extends Controller
             'items.*.remarks' => 'nullable|string|max:500',
         ]);
 
+        DB::beginTransaction();
 
+        try{
             // Attachment upload here
             if($request->hasFile('attachment')){
                 $file = $request->file('attachment');
@@ -221,7 +223,18 @@ class SsrController extends Controller
                 }
             }
 
+            DB::commit();
+
             return redirect()->route('ssr.request.index')->with('success', 'SSR created successfully.');
+        } catch (\Exception $e){
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to upload service reports: ' . $e->getMessage());
+        }
+
+
     }
 
     /**
@@ -310,6 +323,8 @@ class SsrController extends Controller
             'items.*.remarks' => 'nullable|string|max:500',
         ]);
 
+        DB::beginTransaction();
+
         try{
             //Check if the user uploaded new attachment
             if($request->hasFile('attachment')){
@@ -359,8 +374,12 @@ class SsrController extends Controller
                 }
             }
 
+            DB::commit();
+
             return redirect()->route('ssr.request.index')->with('success', 'SSR updated successfully.');
         }catch (\Exception $e){
+            DB::rollBack();
+
             return redirect()->back()
                 ->with('error', 'Failed to update SSR: ' . $e->getMessage())
                 ->withInput();
@@ -380,6 +399,9 @@ class SsrController extends Controller
             'verification_remark' => 'nullable|string',
         ]);
 
+        DB::beginTransaction();
+
+        try{
             if($request->has('items')){
                 foreach ($request->items as $id => $itemData) {
                     SsrItem::where('id', $id)->update([
@@ -398,7 +420,17 @@ class SsrController extends Controller
                 'verified_at'=>now()
             ]);
 
+            DB::commit();
+
             return redirect()->route('ssr.verify.index')->with('success','SSR is successfully verified!');
+        } catch (\Exception $e){
+            DB::rollBack();
+
+            return redirect()->back()
+                ->with('error', 'Failed to update SSR: ' . $e->getMessage())
+                ->withInput();
+        }
+
     }
 
     public function approveUpdate(Request $request, Ssr $ssr){
