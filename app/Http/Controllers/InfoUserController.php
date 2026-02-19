@@ -113,6 +113,16 @@ class InfoUserController extends Controller
         ]);
     }
 
+    public function edit(User $user){
+        return view('user.edit', [
+           'user'=>$user,
+           'positions'=>$this->positions,
+           'companies'=>$this->companies,
+           'departments'=>$this->departments,
+           'roles'=>$this->roles
+        ]);
+    }
+
     public function updateProfile(Request $request){
         $attributes = request()->validate(
             [
@@ -147,5 +157,41 @@ class InfoUserController extends Controller
         ]);
 
         return redirect()->route('user.profile')->with('success','Successfully update your profile');
+    }
+
+    public function update(Request $request){
+        $attributes = request()->validate(
+            [
+                'staff_no'=>'string',
+                'noic'=>'string',
+                'name'=>'string',
+                'phone'=>'string',
+                'address'=>'string',
+                'position'=>'string',
+                'department'=>'string',
+                'company'=>'string',
+                'marital'=>'string',
+                'gender'=>'string',
+                'role'=>'string'
+            ]
+        );
+
+        $user=auth()->user();
+
+        $user->update([
+            'staff_no'=>$attributes['staff_no'],
+            'noic'=>$attributes['noic'],
+            'name'=>$attributes['name'],
+            'phone'=>$attributes['phone'],
+            'address'=>$attributes['address'],
+            'position'=>$attributes['position'],
+            'department'=>$attributes['department'],
+            'company'=>$attributes['company'],
+            'marital'=>$attributes['marital'],
+            'gender'=>$attributes['gender'],
+            'role'=>$attributes['role']
+        ]);
+
+        return redirect()->route('user.index')->with('success','Successfully update user information!');
     }
 }

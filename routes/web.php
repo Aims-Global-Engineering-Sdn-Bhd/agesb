@@ -163,6 +163,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/user/create', [InfoUserController::class, 'create'])->name('user.create');
     Route::get('/user/{user}', [InfoUserController::class, 'show'])->name('user.show');
     Route::post('/user/store', [InfoUserController::class, 'store'])->name('user.store');
+    Route::get('/user/edit/{user}', [InfoUserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/update/{user}', [InfoUserController::class, 'update'])->name('user.update');
 });
 
 Route::group(['middleware' => 'guest'], function () {

@@ -59,6 +59,9 @@
                                                                 <a href="{{ route('user.show', $user) }}" class="dropdown-item" type="button">View</a>
                                                             </li>
                                                             <li>
+                                                                <a href="{{ route('user.edit', $user) }}" class="dropdown-item" type="button">Update</a>
+                                                            </li>
+                                                            <li>
                                                                 <button class="dropdown-item text-danger" type="button">Delete</button>
                                                             </li>
                                                             <li>
