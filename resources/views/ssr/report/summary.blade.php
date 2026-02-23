@@ -78,7 +78,7 @@
                     {{ $item->status ?? '-' }}
                 </span>
                 </td>
-                <td>DO Number: </td>
+                <td>DO Number: {{ $item->delivery_order->do_no }}</td>
             </tr>
         @empty
             {{-- SSR exists but has no items --}}

@@ -63,14 +63,10 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>SSA No.</th>
-                                            <th>Date</th>
-                                            <th>Vessel</th>
-                                            <th>Item</th>
-                                            <th>Location</th>
+                                            <th>Details</th>
                                             <th>Verified</th>
                                             <th>Approved</th>
-                                            <th>Procurement Approved</th>
+                                            <th>Procurement</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -79,11 +75,17 @@
                                         @foreach ($ssas as $ssa)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $ssa->ssa_no }}</td>
-                                                <td>{{ $ssa->date }}</td>
-                                                <td>{{ $ssa->vessel }}</td>
-                                                <td>{{ $ssa->item }}</td>
-                                                <td>{{ $ssa->location }}</td>
+                                                <td>
+                                                    <strong>SSA No.: </strong>{{ $ssa->ssa_no }}
+                                                    <br>
+                                                    <strong>Date: </strong>{{ $ssa->date }}
+                                                    <br>
+                                                    <strong>Vessel: </strong>{{ $ssa->vessel }}
+                                                    <br>
+                                                    <strong>Item: </strong>{{ $ssa->item }}
+                                                    <br>
+                                                    <strong>Location: </strong>{{ $ssa->location }}
+                                                </td>
                                                 <td>
                                                     @if ($ssa->verified_status === 'PENDING')
                                                         <span class="badge bg-warning text-white">PENDING</span>
@@ -168,7 +170,7 @@
                                                                 <a href="{{ route('ssa.report.export', $ssa) }}"
                                                                     class="dropdown-item" type="button">Print</a>
                                                             </li>
-                                                            <li>
+                                                            {{--<li>
                                                                 <form action="{{ route('pro.ssa.destroy', $ssa) }}"
                                                                     method="POST" style="display:inline;"
                                                                     onsubmit="return confirm('Are you sure you want to delete this SSA? This action cannot be undone.')">
@@ -177,7 +179,7 @@
                                                                     <button class="dropdown-item text-danger"
                                                                         type="submit">Delete</button>
                                                                 </form>
-                                                            </li>
+                                                            </li>--}}
                                                             <li>
                                                                 <button class="dropdown-item show-attachment" type="button"
                                                                     data-url="{{ $ssa->doc_url ?? '' }}">

@@ -84,7 +84,7 @@
                             {{ $item->status ?? '-' }}
                         </span>
                     </td>
-                    <td>DO Number: </td>
+                    <td>DO Number: {{ $item->delivery_order->do_no ?? '-' }}</td>
                 </tr>
             @endforeach
         @else

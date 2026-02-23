@@ -163,16 +163,6 @@
                                                                     class="dropdown-item" type="button">Print</a>
                                                             </li>
                                                             <li>
-                                                                <form action="{{ route('ssa.destroy', $ssa) }}"
-                                                                    method="POST" style="display:inline;"
-                                                                    onsubmit="return confirm('Are you sure you want to delete this SSA? This action cannot be undone.')">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button class="dropdown-item text-danger"
-                                                                        type="submit">Delete</button>
-                                                                </form>
-                                                            </li>
-                                                            <li>
                                                                 <button class="dropdown-item" type="button">Close</button>
                                                             </li>
                                                         </ul>

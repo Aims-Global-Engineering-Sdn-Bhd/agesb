@@ -91,9 +91,9 @@
                                                             <li>
                                                                 <a href="{{ route('pro.do.report', $do) }}" class="dropdown-item" type="button">Print</a>
                                                             </li>
-                                                            <li>
+                                                            {{--<li>
                                                                 <button class="dropdown-item text-danger" type="button">Delete</button>
-                                                            </li>
+                                                            </li>--}}
                                                             <li>
                                                                 <button class="dropdown-item" type="button">Close</button>
                                                             </li>

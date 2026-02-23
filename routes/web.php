@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/request/edit/{ssr}', [SsrController::class, 'edit'])->name('request.edit');
         Route::put('/request/update/{ssr}',[SsrController::class, 'update'])->name('request.update');
         Route::get('/request/show/{ssr}', [SsrController::class, 'show'])->name('request.show');
+        Route::delete('/destroy/{ssr}', [SsrController::class, 'destroy'])->name('destroy');
 
         //SSR->Verification routes here
         Route::get('/verify',[SsrController::class, 'verifyIndex'])->name('verify.index')->middleware(['auth', 'can:confirm-action']);

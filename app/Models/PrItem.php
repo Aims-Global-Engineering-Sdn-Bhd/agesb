@@ -23,7 +23,7 @@ class PrItem extends Model
         'quantity_pro'
     ];
 
-    public function delivery_orders(){
+    public function delivery_order(){
         return $this->belongsTo(DeliveryOrder::class, 'do_id','id');
     }
 

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateSsrRequest;
 use App\Models\SsrItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use mysql_xdevapi\Exception;
 
@@ -471,7 +472,11 @@ class SsrController extends Controller
      */
     public function destroy(Ssr $ssr)
     {
-        //
+        $ssr->deleted_by = Auth::id();
+        $ssr->save();
+        $ssr->delete();
+
+        return redirect()->route('ssr.request.index')->with("Successfully delete SSR!");
     }
 
     public function exportReport(Ssr $ssr){

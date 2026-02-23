@@ -152,9 +152,6 @@
                                                             <a href="{{ route('pr.report.export', $pr) }}" class="dropdown-item" type="button">Print</a>
                                                         </li>
                                                         <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
-                                                        </li>
-                                                        <li>
                                                             <button class="dropdown-item" type="button">Close</button>
                                                         </li>
                                                     </ul>

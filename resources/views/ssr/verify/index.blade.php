@@ -159,9 +159,6 @@
                                                             <a href="{{ route('ssr.verify.edit', $ssr) }}" class="dropdown-item" type="button">Update</a>
                                                         </li>
                                                         <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
-                                                        </li>
-                                                        <li>
                                                             <button class="dropdown-item show-attachment"
                                                                     type="button"
                                                                     data-url="{{ $ssr->doc_url ?? '' }}">

@@ -63,14 +63,10 @@
                                     <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>SSR No.</th>
-                                        <th>Date</th>
-                                        <th>Vessel</th>
-                                        <th>Item</th>
-                                        <th>Location</th>
+                                        <th>Details</th>
                                         <th>Verified</th>
                                         <th>Approved</th>
-                                        <th>Procurement Approved</th>
+                                        <th>Procurement</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -79,11 +75,17 @@
                                     @foreach($ssrs as $ssr)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $ssr->ssr_no }}</td>
-                                            <td>{{ $ssr->date }}</td>
-                                            <td>{{ $ssr->vessel }}</td>
-                                            <td>{{ $ssr->item }}</td>
-                                            <td>{{ $ssr->location }}</td>
+                                            <td>
+                                                <strong>SSR No.: </strong>{{ $ssr->ssr_no }}
+                                                <br>
+                                                <strong>Date: </strong>{{ $ssr->date }}
+                                                <br>
+                                                <strong>Vessel: </strong>{{ $ssr->vessel }}
+                                                <br>
+                                                <strong>Item: </strong>{{ $ssr->item }}
+                                                <br>
+                                                <strong>Location: </strong>{{ $ssr->location }}
+                                            </td>
                                             <td>
                                                 @if($ssr->verified_status === 'PENDING')
                                                     <span class="badge bg-warning text-white">PENDING</span>
@@ -155,9 +157,6 @@
                                                         </li>
                                                         <li>
                                                             <a href="{{ route('ssr.report.export', $ssr) }}" class="dropdown-item" type="button">Print</a>
-                                                        </li>
-                                                        <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
                                                         </li>
                                                         <li>
                                                             <button class="dropdown-item show-attachment"

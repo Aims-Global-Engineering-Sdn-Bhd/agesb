@@ -146,7 +146,14 @@
                                                             <a href="{{ route('ssr.report.export', $ssr) }}" class="dropdown-item" type="button">Print</a>
                                                         </li>
                                                         <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
+                                                            <form action="{{ route('ssr.destroy', $ssr) }}"
+                                                                  method="POST" style="display:inline;"
+                                                                  onsubmit="return confirm('Are you sure you want to delete this SSR? This action cannot be undone.')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="dropdown-item text-danger"
+                                                                        type="submit">Delete</button>
+                                                            </form>
                                                         </li>
                                                         <li>
                                                             <button class="dropdown-item show-attachment"

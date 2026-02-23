@@ -63,13 +63,11 @@
                                     <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>PR No.</th>
-                                        <th>Date</th>
-                                        <th>Vessel</th>
+                                        <th>Details</th>
                                         <th>Category</th>
                                         <th>Confirmation</th>
                                         <th>Approval</th>
-                                        <th>Procurement Approval</th>
+                                        <th>Procurement</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -78,9 +76,13 @@
                                     @foreach($prs as $pr)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $pr->pr_no }}</td>
-                                            <td>{{ $pr->date }}</td>
-                                            <td>{{ $pr->vessel }}</td>
+                                            <td>
+                                                <strong>PR No:</strong> {{ $pr->pr_no }}
+                                                <br>
+                                                <strong>Date: </strong>{{ $pr->date }}
+                                                <br>
+                                                <strong>Vessel: </strong>{{ $pr->vessel }}
+                                            </td>
                                             <td>{{ $pr->item_req }}</td>
                                             <td>
                                                 @if($pr->confirmed_status === 'PENDING')
@@ -91,12 +93,6 @@
                                                     <span class="badge bg-secondary">{{ $pr->confirmed_status }}</span>
                                                 @endif
 
-                                                {{-- Confirmed By --}}
-                                                @if(!empty($pr->confirmedBy))
-                                                    <div class="text-muted small mt-1">
-                                                        Confirmed By: {{ $pr->confirmedBy->name }}
-                                                    </div>
-                                                @endif
                                             </td>
                                             <td>
                                                 @if($pr->approved_status === 'PENDING')
@@ -107,12 +103,6 @@
                                                     <span class="badge bg-secondary">{{ $pr->approved_status }}</span>
                                                 @endif
 
-                                                {{-- Approved By --}}
-                                                @if(!empty($pr->approvedBy))
-                                                    <div class="text-muted small mt-1">
-                                                        Approved By: {{ $pr->approvedBy->name }}
-                                                    </div>
-                                                @endif
                                             </td>
                                             <td>
                                                 @if($pr->pro_status === 'PENDING')
@@ -123,12 +113,6 @@
                                                     <span class="badge bg-secondary">{{ $pr->pro_status }}</span>
                                                 @endif
 
-                                                {{-- PROC approved By --}}
-                                                @if(!empty($pr->proBy))
-                                                    <div class="text-muted small mt-1">
-                                                        Approved By: {{ $pr->proBy->name }}
-                                                    </div>
-                                                @endif
                                             </td>
                                             @php
                                                 $statusColors = [
@@ -156,9 +140,6 @@
                                                         </li>
                                                         <li>
                                                             <a href="{{ route('pro.pr.edit', $pr) }}" class="dropdown-item" type="button">Update</a>
-                                                        </li>
-                                                        <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
                                                         </li>
                                                         <li>
                                                             <button class="dropdown-item" type="button">Close</button>

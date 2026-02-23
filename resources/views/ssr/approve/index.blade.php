@@ -159,9 +159,6 @@
                                                             <a href="{{ route('ssr.report.export', $ssr) }}" class="dropdown-item" type="button">Print</a>
                                                         </li>
                                                         <li>
-                                                            <button class="dropdown-item text-danger" type="button">Delete</button>
-                                                        </li>
-                                                        <li>
                                                             <button class="dropdown-item show-attachment"
                                                                     type="button"
                                                                     data-url="{{ $ssr->doc_url ?? '' }}">
