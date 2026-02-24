@@ -7,6 +7,15 @@
         <div class="container-fluid py-4">
             <div class="row justify-content-center">
                 <div class="col-12">
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span class="alert-icon"><i class="ni ni-like-2"></i></span>
+                            <span class="alert-text"><strong>Error!</strong> {{ session('error') }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
                     <div class="card shadow-sm">
                         {{-- Card Header --}}
                         <div class="card-header pb-0 bg-light text-white">

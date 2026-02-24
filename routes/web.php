@@ -129,7 +129,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/report/summary', [PurchaseRequestController::class, 'exportSummary'])->name('report.summary');
     });
 
-    Route::middleware(['auth', 'can:procurement'])->prefix('pro')->name('pro.')->group(function(){
+    Route::middleware(['auth', 'can:procurement-hod'])->prefix('pro')->name('pro.')->group(function(){
         //PR Routes here
         Route::get('/pr', [PurchaseRequestController::class, 'proIndex'])->name('pr.index');
         Route::get('/pr/show/{pr}', [PurchaseRequestController::class, 'show'])->name('pr.show');
@@ -149,6 +149,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/ssa/update/{ssa}', [SsaController::class, 'proUpdate'])->name('ssa.update');
         Route::delete('/ssa/{ssa}', [SsaController::class, 'destroy'])->name('ssa.destroy');
 
+    });
+
+    Route::middleware(['auth', 'can:procurement'])->prefix('pro')->name('pro.')->group(function(){
         Route::get('/do', [DeliveryOrderController::class, 'index'])->name('do.index');
         Route::get('/do/create', [DeliveryOrderController::class, 'create'])->name('do.create');
         Route::get('/do/pr_items/{id}', [DeliveryOrderController::class, 'getPRItems'])->name('do.pr_items');
@@ -166,6 +169,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/user/store', [InfoUserController::class, 'store'])->name('user.store');
     Route::get('/user/edit/{user}', [InfoUserController::class, 'edit'])->name('user.edit');
     Route::put('/user/update/{user}', [InfoUserController::class, 'update'])->name('user.update');
+    Route::delete('/user/destroy/{user}', [InfoUserController::class, 'destroy'])->name('user.destroy');
 });
 
 Route::group(['middleware' => 'guest'], function () {

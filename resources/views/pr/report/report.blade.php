@@ -150,9 +150,9 @@
                 <strong>PROCUREMENT DEPARTMENT USE ONLY</strong><hr><br>
 
                 <table>
-                    <tr><td class="row-label">Received By: {{ $pr->proBy->name ?? '' }}</td><td></td></tr>
-                    <tr><td class="row-label">Position: {{ $pr->proBy->position ?? '' }}</td><td></td></tr>
-                    <tr><td class="row-label">Date:</td><td></td></tr>
+                    <tr><td class="row-label">Received By: </td><td>{{ $pr->proBy->name ?? '' }}</td></tr>
+                    <tr><td class="row-label">Position: </td><td>{{ $pr->proBy->position ?? '' }}</td></tr>
+                    <tr><td class="row-label">Date:</td><td>{{ $pr->pro_at ?? '' }}</td></tr>
                 </table>
 
                 <div class="line-break"></div>

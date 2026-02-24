@@ -62,7 +62,14 @@
                                                                 <a href="{{ route('user.edit', $user) }}" class="dropdown-item" type="button">Update</a>
                                                             </li>
                                                             <li>
-                                                                <button class="dropdown-item text-danger" type="button">Delete</button>
+                                                                <form action="{{ route('user.destroy', $user) }}"
+                                                                      method="POST" style="display:inline;"
+                                                                      onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button class="dropdown-item text-danger"
+                                                                            type="submit">Delete</button>
+                                                                </form>
                                                             </li>
                                                             <li>
                                                                 <button class="dropdown-item" type="button">Close</button>

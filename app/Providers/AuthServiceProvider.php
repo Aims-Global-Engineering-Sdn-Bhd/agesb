@@ -35,6 +35,10 @@ class AuthServiceProvider extends ServiceProvider
            return $user->department === 'PROCUREMENT';
         });
 
+        Gate::define('procurement-hod', function ($user){
+           return $user->department === 'PROCUREMENT' && $user->position === 'HOD PROCUREMENT';
+        });
+
         //Access for operation department
         Gate::define('operation', function ($user){
            return in_array($user->department, ['OPERATION','TECHNICAL']);
@@ -45,7 +49,7 @@ class AuthServiceProvider extends ServiceProvider
            return in_array($user->department, ['OPERATION','TECHNICAL']) && in_array($user->position, [
                 'TECHNICAL SUPERINTENDENT',
                    'MARINE SUPERINTENDENT',
-                   'SENIOR EXECUTIVE CUM HSE'
+                   'SENIOR EXECUTIVE CUM HSE',
                ]);
         });
 

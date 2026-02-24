@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
 
@@ -18,7 +19,7 @@ class InfoUserController extends Controller
         "EXECUTIVE OPERATION",
         "JUNIOR EXECUTIVE TECHNICAL",
         "SENIOR EXECUTIVE CUM HSE",
-        "MARINE SUPRINTENDENT",
+        "MARINE SUPERINTENDENT",
         "CHIEF EXECUTIVE OFFICER",
         "HOD PROCUREMENT",
         "EXECUTIVE PROCUREMENT"
@@ -75,27 +76,41 @@ class InfoUserController extends Controller
             'gender'=>['required']
         ]);
 
-        //Default password is IC
-        $password = bcrypt($attributes['noic'] );
+        DB::beginTransaction();
 
-        User::create([
-            'name'=>$attributes['name'],
-            'email'=>$attributes['email'],
-            'staff_no'=>$attributes['staff_no'],
-            'noic'=>$attributes['noic'],
-            'phone'=>$attributes['phone'],
-            'address'=>$attributes['address'],
-            'position'=>$attributes['position'],
-            'role'=>$attributes['role'],
-            'company'=>$attributes['company'],
-            'department'=>$attributes['department'],
-            'marital'=>$attributes['marital'],
-            'gender'=>$attributes['gender'],
-            'password'=>$password,
-            'status'=>'ACTIVE'
-        ]);
+        try{
+            //Default password is IC
+            $password = bcrypt($attributes['noic'] );
 
-        return redirect()->route('user.index')->with('success','Successfully created new user');
+            User::create([
+                'name'=>$attributes['name'],
+                'email'=>$attributes['email'],
+                'staff_no'=>$attributes['staff_no'],
+                'noic'=>$attributes['noic'],
+                'phone'=>$attributes['phone'],
+                'address'=>$attributes['address'],
+                'position'=>$attributes['position'],
+                'role'=>$attributes['role'],
+                'company'=>$attributes['company'],
+                'department'=>$attributes['department'],
+                'marital'=>$attributes['marital'],
+                'gender'=>$attributes['gender'],
+                'password'=>$password,
+                'status'=>'ACTIVE'
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('user.index')->with('success','Successfully created new user');
+        } catch (\Exception $e){
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to add new user: ' . $e->getMessage());
+        }
+
+
     }
 
     public function show(User $user){
@@ -111,6 +126,14 @@ class InfoUserController extends Controller
             'companies'=>$this->companies,
             'departments'=>$this->departments
         ]);
+    }
+
+    public function destroy(User $user){
+        $user->deleted_by = Auth::id();
+        $user->save();
+        $user->delete();
+
+        return redirect()->route('user.index')->with('Successfully deleted the user ', $user->name);
     }
 
     public function edit(User $user){
