@@ -30,7 +30,7 @@
 
                                 <li class="nav-item">
                                     <a class="nav-link {{ empty($selectedVessel) ? 'active' : '' }}"
-                                        href="{{ route('ssa.request.index') }}">
+                                        href="{{ route('ssa.verify.index') }}">
                                         All
                                     </a>
                                 </li>
@@ -38,13 +38,30 @@
                                 @foreach ($vessels as $code => $name)
                                     <li class="nav-item">
                                         <a class="nav-link {{ $selectedVessel == $code ? 'active' : '' }}"
-                                            href="{{ route('ssa.request.index', ['vessel' => $code]) }}">
+                                            href="{{ route('ssa.verify.index', ['vessel' => $code]) }}">
                                             {{ $name }}
                                         </a>
                                     </li>
                                 @endforeach
 
                             </ul>
+
+                            {{-- Status Filter --}}
+                            <div class="d-flex align-items-center px-3 mb-3 gap-2">
+
+                                <span class="small fw-bold">Status:</span>
+
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" id="statusSwitch"
+                                        {{ request('status') === 'close' ? 'checked' : '' }}>
+                                </div>
+
+                                <span id="statusBadge"
+                                      class="badge {{ request('status') === 'close' ? 'bg-warning' : 'bg-success' }}">
+                                {{ request('status') === 'close' ? 'CLOSE' : 'OPEN' }}
+                            </span>
+
+                            </div>
 
                             <div class="table-responsive p-0">
                                 <table class="table table-bordered align-items-center mb-0 datatable">
